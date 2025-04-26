@@ -14,3 +14,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 - AsyncStorage (Для хранения избранного)
 - Публичное API (Новостное апи)
 
+## API
+Использовали API из сайта https://newsapi.org/
+
+

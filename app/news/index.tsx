@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { fetchNews } from '../../lib/news';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image, Pressable, Linking } from 'react-native';
+import { fetchNews } from '../../lib/news'; 
 
 export default function NewsScreen() {
   const [news, setNews] = useState<any[]>([]);
@@ -9,8 +9,8 @@ export default function NewsScreen() {
   useEffect(() => {
     const getNews = async () => {
       const fetchedNews = await fetchNews();
-      console.log('Ответ от API:', fetchedNews); // <-- Печатаем ответ для дебага
-      setNews(fetchedNews || []); // Если нет данных - ставим пустой массив
+      console.log('Ответ от API:', fetchedNews);
+      setNews(fetchedNews || []);
       setLoading(false);
     };
     
@@ -37,10 +37,23 @@ export default function NewsScreen() {
   return (
     <ScrollView style={styles.container}>
       {news.map((item, index) => (
-        <View key={index} style={styles.newsItem}>
+        <Pressable
+          key={index}
+          style={styles.newsItem}
+          onPress={() => {
+            if (item.url) {
+              Linking.openURL(item.url);
+            }
+          }}
+        >
+          {item.urlToImage ? (
+            <Image source={{ uri: item.urlToImage }} style={styles.newsImage} />
+          ) : null}
           <Text style={styles.newsTitle}>{item.title}</Text>
-          <Text style={styles.newsText}>{item.description}</Text>
-        </View>
+          {item.description ? (
+            <Text style={styles.newsText}>{item.description}</Text>
+          ) : null}
+        </Pressable>
       ))}
     </ScrollView>
   );
@@ -49,7 +62,7 @@ export default function NewsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
   },
   center: {
@@ -58,20 +71,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   newsItem: {
-    marginBottom: 15,
-    padding: 10,
+    marginBottom: 20,
     backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+    borderRadius: 10,
+    overflow: 'hidden',
+    elevation: 2, // для Android тень
+    shadowColor: '#000', // для iOS тень
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  newsImage: {
+    width: '100%',
+    height: 200,
   },
   newsTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    marginVertical: 8,
+    marginHorizontal: 10,
     color: '#333',
   },
   newsText: {
     fontSize: 14,
+    marginBottom: 10,
+    marginHorizontal: 10,
     color: '#666',
   },
 });
+
 
 
